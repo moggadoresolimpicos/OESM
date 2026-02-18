@@ -5,372 +5,1118 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Olimpíada Equipes Sigma de Matemática</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0c0e14;
+    --surface: #13161f;
+    --surface2: #1a1e2b;
+    --border: #252a38;
+    --accent: #e8b84b;
+    --accent2: #4b7be8;
+    --text: #e8eaf0;
+    --text-muted: #7a8099;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── Noise texture overlay ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  /* ── Grid ── */
+  .grid-bg {
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(232,184,75,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(232,184,75,0.025) 1px, transparent 1px);
+    background-size: 64px 64px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── Glow blobs ── */
+  .glow-blob {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(120px);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .glow-blob-1 {
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(232,184,75,0.12), transparent 70%);
+    top: -150px; right: -100px;
+    animation: blobDrift 18s ease-in-out infinite alternate;
+  }
+  .glow-blob-2 {
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(75,123,232,0.1), transparent 70%);
+    bottom: 10%; left: -100px;
+    animation: blobDrift 22s ease-in-out infinite alternate-reverse;
+  }
+  @keyframes blobDrift {
+    from { transform: translate(0, 0) scale(1); }
+    to   { transform: translate(30px, 40px) scale(1.08); }
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 48px;
+    height: 72px;
+    background: rgba(12,14,20,0.7);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+  }
+
+  .nav-sigma {
+    width: 38px; height: 38px;
+    background: var(--accent);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: 1.3rem;
+    color: #0c0e14;
+    flex-shrink: 0;
+  }
+
+  .nav-name {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--text);
+    line-height: 1.2;
+  }
+
+  .nav-name span {
+    display: block;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    text-decoration: none;
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--accent); }
+
+  .nav-cta {
+    background: var(--accent) !important;
+    color: #0c0e14 !important;
+    padding: 9px 22px;
+    border-radius: var(--radius-sm);
+    font-weight: 700 !important;
+    transition: all 0.2s !important;
+  }
+
+  .nav-cta:hover {
+    background: #f0c95a !important;
+    box-shadow: 0 4px 20px rgba(232,184,75,0.35) !important;
+    transform: translateY(-1px);
+  }
+
+  .nav-hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    padding: 4px;
+  }
+
+  .nav-hamburger span {
+    display: block;
+    width: 24px; height: 2px;
+    background: var(--text);
+    border-radius: 2px;
+    transition: all 0.3s;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 120px 24px 80px;
+    overflow: hidden;
+  }
+
+  /* Large decorative sigma */
+  .hero-sigma-bg {
+    position: absolute;
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: clamp(300px, 40vw, 560px);
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(232,184,75,0.06);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -52%);
+    pointer-events: none;
+    line-height: 1;
+    user-select: none;
+    animation: sigmaFloat 12s ease-in-out infinite alternate;
+  }
+
+  @keyframes sigmaFloat {
+    from { transform: translate(-50%, -52%) scale(1); }
+    to   { transform: translate(-50%, -50%) scale(1.02); }
+  }
+
+  /* Floating math symbols */
+  .math-symbols {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .math-sym {
+    position: absolute;
+    font-family: 'Playfair Display', serif;
+    color: rgba(232,184,75,0.08);
+    font-size: 1.4rem;
+    animation: floatUp linear infinite;
+    user-select: none;
+  }
+
+  @keyframes floatUp {
+    from { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+    10%  { opacity: 1; }
+    90%  { opacity: 1; }
+    to   { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+  }
+
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(232,184,75,0.1);
+    border: 1px solid rgba(232,184,75,0.25);
+    border-radius: 100px;
+    padding: 6px 20px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 28px;
+    animation: fadeUp 0.8s ease forwards;
+    opacity: 0;
+  }
+
+  .pulse-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 1.8s ease infinite;
+    flex-shrink: 0;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.6); }
+  }
+
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.6rem, 7vw, 5.2rem);
+    font-weight: 900;
+    line-height: 1.06;
+    color: var(--text);
+    max-width: 820px;
+    margin-bottom: 22px;
+    animation: fadeUp 0.8s 0.15s ease forwards;
+    opacity: 0;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .hero p {
+    font-size: clamp(1rem, 2vw, 1.15rem);
+    font-weight: 300;
+    color: var(--text-muted);
+    max-width: 560px;
+    line-height: 1.8;
+    margin-bottom: 44px;
+    animation: fadeUp 0.8s 0.3s ease forwards;
+    opacity: 0;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+    animation: fadeUp 0.8s 0.45s ease forwards;
+    opacity: 0;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .btn-hero {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--accent);
+    color: #0c0e14;
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+    padding: 16px 36px;
+    font-weight: 700;
+    font-size: 1rem;
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.5s;
+  }
+
+  .btn-hero:hover::after { transform: translateX(100%); }
+
+  .btn-hero:hover {
+    background: #f0c95a;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(232,184,75,0.4);
+  }
+
+  .btn-hero-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: transparent;
+    color: var(--text);
+    text-decoration: none;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 16px 36px;
+    font-weight: 500;
+    font-size: 1rem;
+    transition: all 0.25s;
+  }
+
+  .btn-hero-ghost:hover {
+    border-color: var(--text-muted);
+    background: rgba(255,255,255,0.04);
+    transform: translateY(-2px);
+  }
+
+  .hero-scroll {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    animation: fadeUp 1s 1s ease forwards;
+    opacity: 0;
+  }
+
+  .scroll-line {
+    width: 1px; height: 40px;
+    background: linear-gradient(to bottom, var(--accent), transparent);
+    animation: scrollPulse 2s ease infinite;
+  }
+
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.4; transform: scaleY(1); }
+    50% { opacity: 1; transform: scaleY(0.7); }
+  }
+
+  /* ── STATS ── */
+  .stats-bar {
+    position: relative;
+    z-index: 1;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 36px 48px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+  }
+
+  .stat-item {
+    text-align: center;
+    padding: 0 24px;
+    border-right: 1px solid var(--border);
+    opacity: 0;
+    transform: translateY(14px);
+    transition: all 0.5s ease;
+  }
+
+  .stat-item:last-child { border-right: none; }
+  .stat-item.visible { opacity: 1; transform: translateY(0); }
+
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: 2.4rem;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .stat-label {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  /* ── SECTIONS ── */
+  .section {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 100px 48px;
+  }
+
+  .section-tag {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .section h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 900;
+    line-height: 1.15;
+    color: var(--text);
+    margin-bottom: 16px;
+  }
+
+  .section-lead {
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    font-weight: 300;
+    line-height: 1.8;
+    max-width: 580px;
+    margin-bottom: 56px;
+  }
+
+  /* ── LEVELS ── */
+  .levels-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  .level-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 36px 28px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  .level-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .level-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  }
+
+  .level-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--card-color, var(--accent));
+  }
+
+  .level-card[data-level="alpha"] { --card-color: #e8b84b; }
+  .level-card[data-level="beta"]  { --card-color: #4b7be8; }
+  .level-card[data-level="gama"]  { --card-color: #e84b6a; }
+
+  .level-greek {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    font-weight: 900;
+    color: var(--card-color, var(--accent));
+    opacity: 0.25;
+    position: absolute;
+    top: 20px; right: 24px;
+    line-height: 1;
+    user-select: none;
+  }
+
+  .level-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .level-grade {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    padding: 4px 10px;
+    background: var(--surface2);
+    border-radius: 100px;
+    display: inline-block;
+  }
+
+  .level-desc {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  /* ── HOW IT WORKS ── */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    position: relative;
+  }
+
+  .steps::after {
+    content: '';
+    position: absolute;
+    top: 28px;
+    left: 10%;
+    right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border) 20%, var(--border) 80%, transparent);
+  }
+
+  .step {
+    text-align: center;
+    padding: 0 20px;
+    position: relative;
+    z-index: 1;
+    opacity: 0;
+    transform: translateY(16px);
+    transition: all 0.4s ease;
+  }
+
+  .step.visible { opacity: 1; transform: translateY(0); }
+
+  .step-num {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: var(--accent);
+    margin: 0 auto 20px;
+    transition: all 0.3s;
+  }
+
+  .step:hover .step-num {
+    background: rgba(232,184,75,0.12);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 8px rgba(232,184,75,0.06);
+  }
+
+  .step h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 10px;
+  }
+
+  .step p {
+    font-size: 0.86rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  /* ── DATES ── */
+  .dates-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .date-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px 28px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: all 0.3s;
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+
+  .date-card.visible { opacity: 1; transform: translateX(0); }
+  .date-card:hover { border-color: var(--accent); }
+
+  .date-icon {
+    width: 48px; height: 48px;
+    border-radius: var(--radius-sm);
+    background: rgba(232,184,75,0.1);
+    border: 1px solid rgba(232,184,75,0.25);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+  }
+
+  .date-info strong {
+    display: block;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .date-info span {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .date-status {
+    margin-left: auto;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 100px;
+    flex-shrink: 0;
+  }
+
+  .date-status.open {
+    color: #4be8a0;
+    background: rgba(75,232,160,0.1);
+    border: 1px solid rgba(75,232,160,0.3);
+  }
+
+  .date-status.soon {
+    color: var(--accent);
+    background: rgba(232,184,75,0.1);
+    border: 1px solid rgba(232,184,75,0.25);
+  }
+
+  .date-status.future {
+    color: var(--text-muted);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+  }
+
+  /* ── CTA SECTION ── */
+  .cta-section {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 100px 48px;
+    overflow: hidden;
+  }
+
+  .cta-inner {
+    max-width: 680px;
+    margin: 0 auto;
+    background: var(--surface);
+    border: 1px solid rgba(232,184,75,0.25);
+    border-radius: 24px;
+    padding: 64px 56px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-inner::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(232,184,75,0.15), transparent 70%);
+    border-radius: 50%;
+  }
+
+  .cta-inner::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; left: -40px;
+    width: 160px; height: 160px;
+    background: radial-gradient(circle, rgba(75,123,232,0.12), transparent 70%);
+    border-radius: 50%;
+  }
+
+  .cta-sigma {
+    display: inline-block;
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: 3.5rem;
+    color: var(--accent);
+    margin-bottom: 20px;
+    line-height: 1;
+  }
+
+  .cta-inner h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    font-weight: 900;
+    line-height: 1.15;
+    color: var(--text);
+    margin-bottom: 14px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .cta-inner p {
+    color: var(--text-muted);
+    font-size: 1rem;
+    line-height: 1.8;
+    font-weight: 300;
+    margin-bottom: 36px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .cta-inner .btn-hero {
+    position: relative;
+    z-index: 1;
+    font-size: 1.05rem;
+    padding: 18px 44px;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid var(--border);
+    padding: 40px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .footer-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+  }
+
+  .footer-text {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    font-weight: 300;
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 24px;
+    list-style: none;
+  }
+
+  .footer-links a {
+    text-decoration: none;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    transition: color 0.2s;
+  }
+
+  .footer-links a:hover { color: var(--accent); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    nav { padding: 0 24px; }
+    .nav-links { display: none; }
+    .nav-links.open {
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 72px; left: 0; right: 0;
+      background: rgba(12,14,20,0.97);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 24px;
+      gap: 20px;
+      align-items: flex-start;
+    }
+    .nav-hamburger { display: flex; }
+    .stats-bar { grid-template-columns: repeat(2, 1fr); gap: 20px; padding: 36px 24px; }
+    .stat-item { border-right: none; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
+    .stat-item:nth-child(2n) { border-bottom: none; }
+    .levels-grid { grid-template-columns: 1fr; }
+    .steps { grid-template-columns: repeat(2, 1fr); gap: 32px; }
+    .steps::after { display: none; }
+    .dates-grid { grid-template-columns: 1fr; }
+    .section { padding: 70px 24px; }
+    .cta-section { padding: 60px 24px; }
+    .cta-inner { padding: 44px 28px; }
+    footer { padding: 32px 24px; flex-direction: column; align-items: flex-start; }
+  }
+
+  @media (max-width: 580px) {
+    .hero h1 { font-size: 2.2rem; }
+    .steps { grid-template-columns: 1fr; }
+    .stats-bar { grid-template-columns: 1fr 1fr; }
+    .cta-inner h2 { font-size: 1.6rem; }
+  }
+</style>
 </head>
 <body>
 
-<div class="wrapper">
-  <header>
-    <div class="sigma-badge">Inscrições Abertas</div>
-    <h1>Olimpíada Equipes<br><span>Sigma</span> de Matemática</h1>
-    <p>Preencha os dados da sua equipe com atenção. Todos os campos são obrigatórios.</p>
-  </header>
+<div class="grid-bg"></div>
+<div class="glow-blob glow-blob-1"></div>
+<div class="glow-blob glow-blob-2"></div>
 
-  <form id="sigma-form" novalidate>
+<!-- Math symbols floating -->
+<div class="math-symbols" id="mathSymbols"></div>
 
-    <!-- Team size selector -->
-    <div class="card">
-      <div class="section-title">Tamanho da Equipe</div>
-      <div class="team-selector">
-        <label class="team-option">
-          <input type="radio" name="team-size" value="2" id="size-2">
-          <div class="team-option-label">
-            <span class="team-num">2</span>
-            <span class="team-label-text">Participantes</span>
-          </div>
-        </label>
-        <label class="team-option">
-          <input type="radio" name="team-size" value="3" id="size-3" checked>
-          <div class="team-option-label">
-            <span class="team-num">3</span>
-            <span class="team-label-text">Participantes</span>
-          </div>
-        </label>
-      </div>
+<!-- NAV -->
+<nav id="navbar">
+  <a class="nav-logo" href="#">
+    <div class="nav-sigma">Σ</div>
+    <div class="nav-name">Sigma<span>Olimpíada de Matemática</span></div>
+  </a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#niveis">Níveis</a></li>
+    <li><a href="#como-funciona">Como Funciona</a></li>
+    <li><a href="#datas">Datas</a></li>
+    <li><a href="insc/insc.html" class="nav-cta">Inscrever-se</a></li>
+  </ul>
+  <div class="nav-hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
 
-      <!-- General team data -->
-      <div class="section-title">Dados da Equipe</div>
-      <div style="display:flex;flex-direction:column;gap:16px;">
-        <div class="field-group">
-          <div class="field">
-            <label for="team-name">Nome da Equipe</label>
-            <input type="text" id="team-name" name="team-name" placeholder="Ex: Gauss Warriors">
-            <span class="field-error" id="err-team-name"></span>
-          </div>
-          <div class="field">
-            <label for="team-level">Nível de Participação</label>
-            <select id="team-level" name="team-level">
-              <option value="">Selecione...</option>
-              <option value="Alpha">Alpha</option>
-              <option value="Beta">Beta</option>
-              <option value="Gama">Gama</option>
-            </select>
-            <span class="field-error" id="err-team-level"></span>
-          </div>
-        </div>
-        <div class="field-group">
-          <div class="field">
-            <label for="team-school">Escola</label>
-            <input type="text" id="team-school" name="team-school" placeholder="Nome completo da escola">
-            <span class="field-error" id="err-team-school"></span>
-          </div>
-          <div class="field">
-            <label for="team-uf">Estado (UF)</label>
-            <select id="team-uf" name="team-uf">
-              <option value="">Selecione...</option>
-              <option>AC</option><option>AL</option><option>AP</option><option>AM</option>
-              <option>BA</option><option>CE</option><option>DF</option><option>ES</option>
-              <option>GO</option><option>MA</option><option>MT</option><option>MS</option>
-              <option>MG</option><option>PA</option><option>PB</option><option>PR</option>
-              <option>PE</option><option>PI</option><option>RJ</option><option>RN</option>
-              <option>RS</option><option>RO</option><option>RR</option><option>SC</option>
-              <option>SP</option><option>SE</option><option>TO</option>
-            </select>
-            <span class="field-error" id="err-team-uf"></span>
-          </div>
-        </div>
-      </div>
-    </div>
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-sigma-bg">Σ</div>
 
-    <!-- Participants container -->
-    <div id="participants-container"></div>
+  <div class="hero-eyebrow">
+    <span class="pulse-dot"></span>
+    Inscrições abertas · 2026
+  </div>
 
-    <div class="form-actions">
-      <button type="button" class="btn-secondary" id="btn-reset">↺ Limpar</button>
-      <button type="submit" class="btn-primary">Confirmar Inscrição →</button>
-    </div>
-  </form>
+  <h1>A Matemática<br>que <em>une equipes</em><br>e desafia mentes.</h1>
 
-  <!-- Result -->
-  <div id="result-section">
-    <div class="result-card">
-      <div class="result-title">✓ Inscrição Gerada</div>
-      <div class="result-subtitle">Confira os dados abaixo antes de enviar.</div>
-      <pre id="json-output"></pre>
-      <div class="result-actions">
-        <button class="btn-primary" id="btn-download">↓ Baixar JSON</button>
-        <button class="btn-secondary" id="btn-edit">← Editar</button>
-      </div>
-    </div>
+  <p>A Olimpíada Equipes Sigma é uma competição nacional que celebra o raciocínio matemático coletivo. Forme sua equipe, escolha seu nível e mostre o que vocês são capazes.</p>
+
+  <div class="hero-actions">
+    <a href="insc/insc.html" class="btn-hero">
+      Inscrever minha equipe
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+    <a href="#como-funciona" class="btn-hero-ghost">
+      Como funciona
+    </a>
+  </div>
+
+  <div class="hero-scroll">
+    <span>explorar</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-bar" id="statsBar">
+  <div class="stat-item">
+    <div class="stat-num">x<span style="color:var(--text-muted);font-size:2rem;">+</span></div>
+    <div class="stat-label">Participantes em 2024</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">x<span style="color:var(--text-muted);font-size:2rem;">+</span></div>
+    <div class="stat-label">Escolas inscritas</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">x</div>
+    <div class="stat-label">Estados participantes</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">x</div>
+    <div class="stat-label">Níveis de competição</div>
   </div>
 </div>
 
+<!-- LEVELS -->
+<section class="section" id="niveis">
+  <div class="section-tag">Categorias</div>
+  <h2>Escolha seu nível<br>de desafio</h2>
+  <p class="section-lead">Cada nível é calibrado para oferecer o equilíbrio ideal entre acessibilidade e rigor matemático, respeitando a progressão do aprendizado.</p>
+
+  <div class="levels-grid">
+    <div class="level-card" data-level="alpha">
+      <div class="level-greek">α</div>
+      <div class="level-name">Alpha</div>
+      <div class="level-grade">6º e 7º ano · EF II</div>
+      <p class="level-desc">Introdução ao raciocínio matemático competitivo. Problemas que exploram criatividade, lógica e trabalho em equipe com conceitos do ensino fundamental.</p>
+    </div>
+    <div class="level-card" data-level="beta">
+      <div class="level-greek">β</div>
+      <div class="level-name">Beta</div>
+      <div class="level-grade">8° e 9° · EF II</div>
+      <p class="level-desc">Nível intermediário com problemas que exigem abstração matemática, combinatória e geometria. Ideal para equipes com experiência prévia em olimpíadas.</p>
+    </div>
+    <div class="level-card" data-level="gama">
+      <div class="level-greek">γ</div>
+      <div class="level-name">Gama</div>
+      <div class="level-grade"> Ensino Médio</div>
+      <p class="level-desc">O nível de maior complexidade. Problemas que desafiam o limite do conhecimento do ensino médio, com ênfase em demonstrações e teoria dos números.</p>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section" id="como-funciona" style="background: var(--surface); max-width: 100%; padding: 100px 0;">
+  <div style="max-width: 1100px; margin: 0 auto; padding: 0 48px;">
+    <div class="section-tag">Processo</div>
+    <h2>Como funciona<br>a olimpíada</h2>
+    <p class="section-lead">Quatro etapas simples separam você do pódio. A jornada começa com a inscrição da sua equipe.</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h4>Inscrição</h4>
+        <p>Monte sua equipe de 2 ou 3 estudantes da mesma escola e realize a inscrição online. Cada participante deve enviar comprovante de escolaridade.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h4>Fase Classificatória</h4>
+        <p>Prova dissertativa aplicada online pelo portal da olímpiada. As melhores equipes avançam para a fase seguinte.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h4>Segunda Fase</h4>
+        <p>As equipes classificadas realizam a prova da segunda fase aplicada de forma online pelo portal da olímpiada.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <h4>Premiação</h4>
+        <p>As melhores equipes do Brasil serão premiadas! Múltiplos prêmios serão distribuídos para as melhores equipes.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DATES -->
+<section class="section" id="datas">
+  <div class="section-tag">Calendário</div>
+  <h2>Datas importantes</h2>
+  <p class="section-lead">Fique de olho no calendário e não perca nenhuma etapa da olimpíada.</p>
+
+  <div class="dates-grid">
+    <div class="date-card">
+      <div class="date-icon">📝</div>
+      <div class="date-info">
+        <strong>Período de Inscrições</strong>
+        <span>20 Fev – 02 Jul 2026</span>
+      </div>
+      <div class="date-status open">Aberto</div>
+    </div>
+    <div class="date-card">
+      <div class="date-icon">📚</div>
+      <div class="date-info">
+        <strong>Fase Classificatória</strong>
+        <span>12 Jul – 18 Jul 2026</span>
+      </div>
+      <div class="date-status soon">Em breve</div>
+    </div>
+    <div class="date-card">
+      <div class="date-icon">🏛️</div>
+      <div class="date-info">
+        <strong>Segunda Fase</strong>
+        <span>02 Ago – 08 Ago 2026</span>
+      </div>
+      <div class="date-status future">Futuro</div>
+    </div>
+    <div class="date-card">
+      <div class="date-icon">📊</div>
+      <div class="date-info">
+        <strong>Divulgação de Resultados</strong>
+        <span>25 Set 2026</span>
+      </div>
+      <div class="date-status future">Futuro</div>
+    </div>
+    <div class="date-card">
+      <div class="date-icon">🎖️</div>
+      <div class="date-info">
+        <strong>Premiação</strong>
+        <span>26 Set – 10 Out 2026</span>
+      </div>
+      <div class="date-status future">Futuro</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-section">
+  <div class="cta-inner">
+    <div class="cta-sigma">Σ</div>
+    <h2>Sua equipe está<br>pronta para o desafio?</h2>
+    <p>As inscrições estão abertas. Reúna seus colegas, escolha um nome épico e venha mostrar que a matemática é melhor quando feita em equipe.</p>
+    <a href="insc/insc.html" class="btn-hero">
+      Inscrever minha equipe agora
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <a class="footer-logo" href="#">
+    <div class="nav-sigma">Σ</div>
+    <div class="nav-name">Equipes Sigma<span>Olimpíada de Matemática</span></div>
+  </a>
+  <p class="footer-text">© 2026 Olimpíada Equipes Sigma. Todos os direitos reservados.</p>
+  <ul class="footer-links">
+    <li><a href="#">Regulamento</a></li>
+    <li><a href="#">Contato</a></li>
+    <li><a href="insc/insc.html">Inscrição</a></li>
+  </ul>
+</footer>
+
 <script>
 (function () {
-  const form = document.getElementById('sigma-form');
-  const container = document.getElementById('participants-container');
-  const resultSection = document.getElementById('result-section');
-  const jsonOutput = document.getElementById('json-output');
 
-  let currentSize = 3;
-  let fileData = {}; // { 'p0': { name, type }, ... }
+  // ── Floating math symbols ──
+  const symbols = ['∑', '∫', '∞', '√', 'π', 'Δ', 'θ', '±', '≠', '∈', '⊂', '∂', '∇', 'λ', 'φ'];
+  const container = document.getElementById('mathSymbols');
 
-  // Build participants
-  function buildParticipants(count) {
-    // Animate out existing cards
-    const existing = container.querySelectorAll('.participant-card');
-    existing.forEach(c => {
-      c.style.transition = 'opacity 0.2s, transform 0.2s';
-      c.style.opacity = '0';
-      c.style.transform = 'translateY(-10px)';
-    });
+  for (let i = 0; i < 18; i++) {
+    const el = document.createElement('span');
+    el.className = 'math-sym';
+    el.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+    el.style.left = Math.random() * 100 + 'vw';
+    el.style.fontSize = (0.9 + Math.random() * 1.8) + 'rem';
+    el.style.animationDuration = (20 + Math.random() * 30) + 's';
+    el.style.animationDelay = -(Math.random() * 35) + 's';
+    container.appendChild(el);
+  }
 
-    setTimeout(() => {
-      container.innerHTML = '';
-      for (let i = 0; i < count; i++) {
-        container.appendChild(createParticipantCard(i));
-      }
-      // Reattach file listeners
-      container.querySelectorAll('input[type="file"]').forEach(input => {
-        input.addEventListener('change', handleFileChange);
+  // ── Hamburger ──
+  const hamburger = document.getElementById('hamburger');
+  const navLinks = document.getElementById('navLinks');
+
+  hamburger.addEventListener('click', function () {
+    navLinks.classList.toggle('open');
+  });
+
+  // Close nav on link click
+  navLinks.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => navLinks.classList.remove('open'));
+  });
+
+  // ── Scroll-based animations ──
+  function onVisible(selector, callback, delay) {
+    const elements = document.querySelectorAll(selector);
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => {
+            entry.target.classList.add('visible');
+          }, (delay || 0) + i * 80);
+          observer.unobserve(entry.target);
+        }
       });
-    }, existing.length ? 200 : 0);
+    }, { threshold: 0.15 });
+
+    elements.forEach(el => observer.observe(el));
   }
 
-  function createParticipantCard(index) {
-    const isLeader = index === 0;
-    const div = document.createElement('div');
-    div.className = 'participant-card' + (isLeader ? ' leader' : '');
-    div.id = 'card-p' + index;
+  onVisible('.stat-item', null, 0);
+  onVisible('.level-card', null, 0);
+  onVisible('.step', null, 0);
+  onVisible('.date-card', null, 0);
 
-    div.innerHTML = `
-      <div class="participant-header">
-        <div class="participant-num">${index + 1}</div>
-        <div class="participant-title">Participante ${index + 1}</div>
-        ${isLeader ? '<span class="leader-badge">★ Líder</span>' : ''}
-      </div>
-      <div style="display:flex;flex-direction:column;gap:16px;">
-        <div class="field-group full">
-          <div class="field">
-            <label for="p${index}-name">Nome Completo</label>
-            <input type="text" id="p${index}-name" name="p${index}-name" placeholder="Nome completo">
-            <span class="field-error" id="err-p${index}-name"></span>
-          </div>
-        </div>
-        <div class="field-group">
-          <div class="field">
-            <label for="p${index}-dob">Data de Nascimento</label>
-            <input type="date" id="p${index}-dob" name="p${index}-dob" placeholder="data">
-            <span class="field-error" id="err-p${index}-dob"></span>
-          </div>
-          <div class="field">
-            <label for="p${index}-phone">Telefone com DDD</label>
-            <input type="tel" id="p${index}-phone" name="p${index}-phone" placeholder="(11) 99999-9999" maxlength="15">
-            <span class="field-error" id="err-p${index}-phone"></span>
-          </div>
-        </div>
-        <div class="field-group full">
-          <div class="field">
-            <label for="p${index}-email">E-mail</label>
-            <input type="email" id="p${index}-email" name="p${index}-email" placeholder="email@dominio.com">
-            <span class="field-error" id="err-p${index}-email"></span>
-          </div>
-        </div>
-        <div class="field-group full">
-          <div class="field">
-            <label>Comprovante de Escolaridade (PDF ou imagem)</label>
-            <div class="file-upload">
-              <input type="file" id="p${index}-file" name="p${index}-file" accept=".pdf,image/*" data-index="${index}">
-              <label class="file-upload-label" for="p${index}-file" id="file-label-p${index}">
-                <span class="file-icon">📎</span>
-                <span id="file-text-p${index}">Clique para selecionar arquivo</span>
-              </label>
-            </div>
-            <span class="field-error" id="err-p${index}-file"></span>
-          </div>
-        </div>
-      </div>
-    `;
-
-    // Phone mask
-    const phoneInput = div.querySelector(`#p${index}-phone`);
-    phoneInput.addEventListener('input', function () {
-      let v = this.value.replace(/\D/g, '').slice(0, 11);
-      if (v.length >= 7) {
-        v = v.replace(/^(\d{2})(\d{4,5})(\d{0,4})$/, '($1) $2-$3');
-      } else if (v.length >= 3) {
-        v = v.replace(/^(\d{2})(\d+)$/, '($1) $2');
-      }
-      this.value = v;
-    });
-
-    return div;
-  }
-
-  function handleFileChange(e) {
-    const index = e.target.dataset.index;
-    const file = e.target.files[0];
-    const label = document.getElementById('file-label-p' + index);
-    const text = document.getElementById('file-text-p' + index);
-    const err = document.getElementById('err-p' + index + '-file');
-
-    if (file) {
-      fileData['p' + index] = { name: file.name, type: file.type };
-      label.classList.add('has-file');
-      text.textContent = '✓ ' + file.name;
-      err.textContent = '';
-      e.target.classList.remove('error');
-    } else {
-      delete fileData['p' + index];
-      label.classList.remove('has-file');
-      text.textContent = 'Clique para selecionar arquivo';
-    }
-  }
-
-  // Radio change
-  document.querySelectorAll('input[name="team-size"]').forEach(r => {
-    r.addEventListener('change', function () {
-      currentSize = parseInt(this.value);
-      fileData = {};
-      buildParticipants(currentSize);
-    });
-  });
-
-  // Validation
-  function setError(id, msg) {
-    const el = document.getElementById('err-' + id);
-    const input = document.getElementById(id);
-    if (el) el.textContent = msg;
-    if (input) {
-      if (msg) input.classList.add('error');
-      else input.classList.remove('error');
-    }
-    return !!msg;
-  }
-
-  function validateEmail(email) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  }
-
-  function validatePhone(phone) {
-    const digits = phone.replace(/\D/g, '');
-    return digits.length >= 10 && digits.length <= 11;
-  }
-
-  function validateForm() {
-    let hasError = false;
-
-    // Team fields
-    const teamName = document.getElementById('team-name').value.trim();
-    const teamLevel = document.getElementById('team-level').value;
-    const teamSchool = document.getElementById('team-school').value.trim();
-    const teamUf = document.getElementById('team-uf').value;
-
-    if (!teamName) hasError = setError('team-name', 'Informe o nome da equipe.') || hasError;
-    else setError('team-name', '');
-    if (!teamLevel) hasError = setError('team-level', 'Selecione o nível.') || hasError;
-    else setError('team-level', '');
-    if (!teamSchool) hasError = setError('team-school', 'Informe o nome da escola.') || hasError;
-    else setError('team-school', '');
-    if (!teamUf) hasError = setError('team-uf', 'Selecione o estado.') || hasError;
-    else setError('team-uf', '');
-
-    // Participants
-    for (let i = 0; i < currentSize; i++) {
-      const name = document.getElementById('p' + i + '-name').value.trim();
-      const dob = document.getElementById('p' + i + '-dob').value;
-      const phone = document.getElementById('p' + i + '-phone').value.trim();
-      const email = document.getElementById('p' + i + '-email').value.trim();
-      const file = document.getElementById('p' + i + '-file').files[0];
-
-      if (!name) hasError = setError('p' + i + '-name', 'Informe o nome completo.') || hasError;
-      else setError('p' + i + '-name', '');
-      if (!dob) hasError = setError('p' + i + '-dob', 'Informe a data de nascimento.') || hasError;
-      else setError('p' + i + '-dob', '');
-      if (!phone || !validatePhone(phone)) hasError = setError('p' + i + '-phone', 'Informe um telefone válido com DDD.') || hasError;
-      else setError('p' + i + '-phone', '');
-      if (!email || !validateEmail(email)) hasError = setError('p' + i + '-email', 'Informe um e-mail válido.') || hasError;
-      else setError('p' + i + '-email', '');
-      if (!file) hasError = setError('p' + i + '-file', 'Anexe o comprovante de escolaridade.') || hasError;
-      else setError('p' + i + '-file', '');
-    }
-
-    return !hasError;
-  }
-
-  function buildJSON() {
-    const participants = [];
-    for (let i = 0; i < currentSize; i++) {
-      participants.push({
-        numero: i + 1,
-        lider: i === 0,
-        nome: document.getElementById('p' + i + '-name').value.trim(),
-        data_nascimento: document.getElementById('p' + i + '-dob').value,
-        telefone: document.getElementById('p' + i + '-phone').value.trim(),
-        email: document.getElementById('p' + i + '-email').value.trim(),
-        comprovante: fileData['p' + i] ? fileData['p' + i].name : null
-      });
-    }
-
-    return {
-      equipe: {
-        nome: document.getElementById('team-name').value.trim(),
-        nivel: document.getElementById('team-level').value,
-        escola: document.getElementById('team-school').value.trim(),
-        estado_uf: document.getElementById('team-uf').value,
-        total_participantes: currentSize
-      },
-      participantes: participants
-    };
-  }
-
-  // Form submit
-  form.addEventListener('submit', function (e) {
-    e.preventDefault();
-    if (!validateForm()) return;
-
-    const data = buildJSON();
-    jsonOutput.textContent = JSON.stringify(data, null, 2);
-    resultSection.style.display = 'block';
-    resultSection.scrollIntoView({ behavior: 'smooth' });
-  });
-
-  // Reset
-  document.getElementById('btn-reset').addEventListener('click', function () {
-    form.reset();
-    fileData = {};
-    resultSection.style.display = 'none';
-    container.querySelectorAll('.file-upload-label').forEach(l => {
-      l.classList.remove('has-file');
-      const txt = l.querySelector('span:last-child');
-      if (txt) txt.textContent = 'Clique para selecionar arquivo';
-    });
-    container.querySelectorAll('.field-error').forEach(e => e.textContent = '');
-    container.querySelectorAll('input, select').forEach(i => i.classList.remove('error'));
-    document.querySelectorAll('.field-error').forEach(e => e.textContent = '');
-    document.querySelectorAll('input, select').forEach(i => i.classList.remove('error'));
-  });
-
-  // Download JSON
-  document.getElementById('btn-download').addEventListener('click', function () {
-    const data = buildJSON();
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'inscricao-sigma-' + Date.now() + '.json';
-    a.click();
-    URL.revokeObjectURL(a.href);
-  });
-
-  // Edit
-  document.getElementById('btn-edit').addEventListener('click', function () {
-    resultSection.style.display = 'none';
-    form.scrollIntoView({ behavior: 'smooth' });
-  });
-
-  // Init
-  buildParticipants(currentSize);
 })();
 </script>
 </body>
