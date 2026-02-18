@@ -1,0 +1,158 @@
+/* styles.css - estilo moderno, discreto e acessível */
+:root{
+  --bg-900: #071029;
+  --bg-800: #0b1220;
+  --card: #071726;
+  --glass: rgba(255,255,255,0.03);
+  --muted: #9fb0c8;
+  --text: #e6f0fb;
+  --accent: #5ee3b4;
+  --accent-600: #34c79d;
+  --danger: #ff6b6b;
+  --shadow: 0 8px 30px rgba(2,6,23,0.6);
+  --radius: 12px;
+  --gap: 14px;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  font-size: 16px;
+  color-scheme: dark;
+}
+
+/* page */
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  background: linear-gradient(180deg,var(--bg-900) 0%, #071628 60%);
+  color:var(--text);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  line-height:1.45;
+  padding:28px 18px;
+}
+
+/* container */
+.wrap{
+  max-width:1100px;
+  margin:0 auto;
+  display:grid;
+  gap:22px;
+}
+
+/* header */
+.header{
+  display:flex;
+  gap:16px;
+  align-items:center;
+}
+.logo{
+  width:64px;height:64px;border-radius:14px;
+  background:linear-gradient(135deg,var(--accent),#60a5fa);
+  display:grid;place-items:center;font-weight:700;color:#04263a;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+  flex:0 0 64px;
+}
+.title h1{margin:0;font-size:1.125rem}
+.title p{margin:6px 0 0;color:var(--muted);font-size:0.95rem}
+
+/* layout form + sidebar */
+.form-grid{
+  display:grid;
+  grid-template-columns: 1fr 360px;
+  gap:22px;
+}
+
+/* card */
+.card{
+  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border-radius:var(--radius);
+  padding:18px;
+  box-shadow:var(--shadow);
+  border: 1px solid rgba(255,255,255,0.03);
+}
+
+/* form controls */
+label{display:block;font-size:0.85rem;color:#cfe9f6;margin-bottom:6px}
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="number"],
+select,
+textarea{
+  width:100%;
+  padding:10px 12px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,0.04);
+  background: rgba(255,255,255,0.02);
+  color:var(--text);
+  font-size:0.95rem;
+  outline:none;
+  transition: box-shadow .15s, border-color .15s, transform .06s;
+}
+input::placeholder{color:rgba(255,255,255,0.25)}
+select{appearance:none;padding-right:36px;background-image:linear-gradient(45deg, transparent 50%, rgba(255,255,255,0.12) 50%), linear-gradient(135deg, rgba(255,255,255,0.12) 50%, transparent 50%); background-position: calc(100% - 18px) calc(1em + 2px), calc(100% - 13px) calc(1em + 2px); background-size: 8px 8px, 8px 8px; background-repeat: no-repeat;}
+
+/* focus accessibility */
+input:focus, select:focus, textarea:focus{
+  border-color: var(--accent-600);
+  box-shadow: 0 6px 20px rgba(52,199,157,0.06), 0 0 0 4px rgba(46,200,160,0.06);
+  transform: translateY(-1px);
+}
+
+/* rows and small helpers */
+.row{display:flex;gap:12px}
+.row > *{flex:1}
+
+/* member card */
+.member{background:linear-gradient(180deg, rgba(255,255,255,0.015), transparent);padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.02)}
+.member h3{margin:0 0 10px;font-size:0.95rem}
+
+/* buttons */
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:10px 14px;border-radius:10px;border:none;cursor:pointer;font-weight:600;
+  background:transparent;color:var(--text);
+}
+.btn-ghost{border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--muted)}
+.btn-primary{background:linear-gradient(90deg,var(--accent) 0%, var(--accent-600) 100%);color:#04263a;box-shadow:0 8px 22px rgba(46,200,160,0.12);border:1px solid rgba(0,0,0,0.12)}
+
+/* feedback and summary */
+.error{color:var(--danger);font-size:0.9rem}
+.muted{color:var(--muted);font-size:0.92rem}
+.summary{
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace;
+  font-size:0.86rem;
+  background: rgba(0,0,0,0.18); padding:12px; border-radius:8px; color:var(--muted);
+  max-height:360px; overflow:auto; white-space:pre-wrap;
+}
+
+/* file input modern styling (most browsers) */
+input[type="file"]{
+  background:transparent;
+  color:var(--muted);
+  padding:8px 10px;
+  border-radius:8px;
+  border:1px dashed rgba(255,255,255,0.04);
+}
+input[type="file"]::file-selector-button{
+  margin-right:8px;
+  border:none;
+  padding:8px 12px;
+  border-radius:8px;
+  background:linear-gradient(90deg,var(--accent) 0%, var(--accent-600) 100%);
+  color:#04263a;
+  font-weight:600;
+  cursor:pointer;
+}
+
+/* small screens */
+@media (max-width: 920px){
+  .form-grid{grid-template-columns:1fr}
+  .sidebar{order:2}
+}
+
+/* tiny polish */
+hr.sep{border:none;height:1px;background:rgba(255,255,255,0.03);margin:12px 0}
+small.note{color:var(--muted);font-size:0.82rem}
+
+/* focus-visible useful for keyboard users */
+:focus-visible{outline: 3px solid rgba(94,227,180,0.12); outline-offset:3px}
