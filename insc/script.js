@@ -34,7 +34,7 @@
       </p>
       <div class="status-email-note">
         <span>✉️</span>
-        Um e-mail de confirmação será enviado em breve para
+        Um e-mail de confirmação será enviado em alguns dias para
         <strong style="color:var(--text)">${lastJSON.equipe.email_contato}</strong>.
         Verifique também a caixa de spam.
       </div>

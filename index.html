@@ -66,16 +66,8 @@
 <!-- STATS -->
 <div class="stats-bar" id="statsBar">
   <div class="stat-item">
-    <div class="stat-num">x<span style="color:var(--text-muted);font-size:2rem;">+</span></div>
-    <div class="stat-label">Participantes em 2024</div>
-  </div>
-  <div class="stat-item">
-    <div class="stat-num">x<span style="color:var(--text-muted);font-size:2rem;">+</span></div>
-    <div class="stat-label">Escolas inscritas</div>
-  </div>
-  <div class="stat-item">
-    <div class="stat-num">x</div>
-    <div class="stat-label">Estados participantes</div>
+  <div class="stat-num" id="stat-inscritos">—</div>
+  <div class="stat-label">Participantes inscritos</div>
   </div>
   <div class="stat-item">
     <div class="stat-num">4</div>
@@ -108,6 +100,12 @@
       <div class="level-grade"> Ensino Médio</div>
       <p class="level-desc">O nível de maior complexidade. Problemas que desafiam o limite do conhecimento do ensino médio, com ênfase em demonstrações e teoria dos números.</p>
     </div>
+    <div class="level-card" data-level="omega">
+  <div class="level-greek">Ω</div>
+  <div class="level-name">Omega</div>
+  <div class="level-grade">Aberto a todos · Sem limite de idade</div>
+  <p class="level-desc">Nível aberto a qualquer pessoa, independente da idade. Mesma complexidade do Gama, com ênfase em demonstrações e teoria dos números — para quem quer o desafio máximo.</p>
+</div>
   </div>
 </section>
 
@@ -220,8 +218,28 @@
   </ul>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
 (function () {
+  
+  const SUPABASE_URL      = 'https://bxqfcktntwifyzfjjalx.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_3FWP3S0loab1dFITK0oGYg_bhQuaL08';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// Busca e exibe o total de inscritos
+async function carregarInscritos() {
+  const { data, error } = await supabase
+    .from('contadores')
+    .select('valor')
+    .eq('id', 'total_inscricoes')
+    .single();
+
+  const el = document.getElementById('stat-inscritos');
+  el.textContent = (error || !data) ? '—' : data.valor.toLocaleString('pt-BR');
+}
+
+carregarInscritos();
 
   // ── Floating math symbols ──
   const symbols = ['∑', '∫', '∞', '√', 'π', 'Δ', 'θ', '±', '≠', '∈', '⊂', '∂', '∇', 'λ', 'φ'];
