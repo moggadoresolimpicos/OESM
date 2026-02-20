@@ -506,6 +506,7 @@
   .level-card[data-level="alpha"] { --card-color: #e8b84b; }
   .level-card[data-level="beta"]  { --card-color: #4b7be8; }
   .level-card[data-level="gama"]  { --card-color: #e84b6a; }
+  .level-card[data-level="omega"] { --card-color: #a84be8; }
 
   .level-greek {
     font-family: 'Playfair Display', serif;
